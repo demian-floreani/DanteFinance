@@ -67,12 +67,11 @@ contract TombGenesisRewardPool {
 
     constructor(
         address _tomb,
-        //address _shiba,
         uint256 _poolStartTime
     ) {
         require(block.timestamp < _poolStartTime, "late");
         if (_tomb != address(0)) tomb = IERC20(_tomb);
-        //if (_shiba != address(0)) shiba = _shiba;
+        
         poolStartTime = _poolStartTime;
         poolEndTime = poolStartTime + runningTime;
         operator = msg.sender;
@@ -217,11 +216,7 @@ contract TombGenesisRewardPool {
         }
         if (_amount > 0) {
             pool.token.safeTransferFrom(_sender, address(this), _amount);
-            if(address(pool.token) == shiba) {
-                user.amount = user.amount.add(_amount.mul(9900).div(10000));
-            } else {
-                user.amount = user.amount.add(_amount);
-            }
+            user.amount = user.amount.add(_amount);
         }
         user.rewardDebt = user.amount.mul(pool.accTombPerShare).div(1e18);
         emit Deposit(_sender, _pid, _amount);
