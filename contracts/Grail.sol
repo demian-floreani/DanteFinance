@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
 import "./owner/Operator.sol";
 
-contract TShare is ERC20Burnable, Operator {
+contract Grail is ERC20Burnable, Operator {
     using SafeMath for uint256;
 
     // TOTAL MAX SUPPLY = 70,000 tSHAREs
@@ -30,8 +30,8 @@ contract TShare is ERC20Burnable, Operator {
 
     bool public rewardPoolDistributed = false;
 
-    constructor(uint256 _startTime, address _communityFund, address _devFund) ERC20("TSHARE", "TSHARE") {
-        _mint(msg.sender, 1 ether); // mint 1 TOMB Share for initial pools deployment
+    constructor(uint256 _startTime, address _communityFund, address _devFund) ERC20("GRAIL", "GRAIL") {
+        _mint(msg.sender, 2 ether); // mint 1 TOMB Share for initial pools deployment
 
         startTime = _startTime;
         endTime = startTime + VESTING_DURATION;

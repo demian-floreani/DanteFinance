@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 // Note that this pool has no minter key of TOMB (rewards).
 // Instead, the governance will call TOMB distributeReward method and send reward to this pool at the beginning.
-contract TombRewardPool {
+contract DanteRewardPool {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
