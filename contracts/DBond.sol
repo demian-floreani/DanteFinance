@@ -6,11 +6,14 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
 import "./owner/Operator.sol";
 
-contract TBond is ERC20Burnable, Operator {
+/*
+
+ */
+contract DBond is ERC20Burnable, Operator {
     /**
      * @notice Constructs the TOMB Bond ERC-20 contract.
      */
-    constructor() ERC20("TBOND", "TBOND") {}
+    constructor() ERC20("DBOND", "DBOND") {}
 
     /**
      * @notice Operator mints basis bonds to a recipient

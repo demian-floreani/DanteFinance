@@ -51,7 +51,7 @@ contract ShareWrapper {
 
     http://tomb.finance
 */
-contract Masonry is ShareWrapper, ContractGuard {
+contract Paradise is ShareWrapper, ContractGuard {
     using SafeERC20 for IERC20;
     using Address for address;
     using SafeMath for uint256;

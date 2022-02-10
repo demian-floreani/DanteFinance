@@ -8,7 +8,10 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
 
 import "./owner/Operator.sol";
 
-contract Tomb is ERC20Burnable, Operator {
+/*
+    Dante (DNT)
+ */
+contract Dante is ERC20Burnable, Operator {
     using SafeMath for uint256;
 
     // Initial distribution for the first 24h genesis pools
@@ -24,7 +27,7 @@ contract Tomb is ERC20Burnable, Operator {
     /**
      * @notice Constructs the TOMB ERC-20 contract.
      */
-    constructor() ERC20("TOMB", "TOMB") {
+    constructor() ERC20("DANTE", "DANTE") {
         // Mints 1 TOMB to contract creator for initial pool setup
         _mint(msg.sender, 1 ether);
     }

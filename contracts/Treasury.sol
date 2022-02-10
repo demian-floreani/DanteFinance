@@ -13,7 +13,7 @@ import "./owner/Operator.sol";
 import "./utils/ContractGuard.sol";
 import "./interfaces/IBasisAsset.sol";
 import "./interfaces/IOracle.sol";
-import "./interfaces/IMasonry.sol";
+import "./interfaces/IParadise.sol";
 
 /*
   ______                __       _______
@@ -293,6 +293,10 @@ contract Treasury is ContractGuard {
         masonry = _masonry;
     }
 
+    function setTShare(address _tshare) external onlyOperator {
+        tshare = _tshare;
+    }
+
     function setTombOracle(address _tombOracle) external onlyOperator {
         tombOracle = _tombOracle;
     }
@@ -487,7 +491,7 @@ contract Treasury is ContractGuard {
 
         IERC20(tomb).safeApprove(masonry, 0);
         IERC20(tomb).safeApprove(masonry, _amount);
-        IMasonry(masonry).allocateSeigniorage(_amount);
+        IParadise(masonry).allocateSeigniorage(_amount);
         emit MasonryFunded(block.timestamp, _amount);
     }
 
@@ -556,15 +560,15 @@ contract Treasury is ContractGuard {
     }
 
     function masonrySetOperator(address _operator) external onlyOperator {
-        IMasonry(masonry).setOperator(_operator);
+        IParadise(masonry).setOperator(_operator);
     }
 
     function masonrySetLockUp(uint256 _withdrawLockupEpochs, uint256 _rewardLockupEpochs) external onlyOperator {
-        IMasonry(masonry).setLockUp(_withdrawLockupEpochs, _rewardLockupEpochs);
+        IParadise(masonry).setLockUp(_withdrawLockupEpochs, _rewardLockupEpochs);
     }
 
     function masonryAllocateSeigniorage(uint256 amount) external onlyOperator {
-        IMasonry(masonry).allocateSeigniorage(amount);
+        IParadise(masonry).allocateSeigniorage(amount);
     }
 
     function masonryGovernanceRecoverUnsupported(
@@ -572,6 +576,6 @@ contract Treasury is ContractGuard {
         uint256 _amount,
         address _to
     ) external onlyOperator {
-        IMasonry(masonry).governanceRecoverUnsupported(_token, _amount, _to);
+        IParadise(masonry).governanceRecoverUnsupported(_token, _amount, _to);
     }
 }
