@@ -18,6 +18,16 @@ async function main() {
     const dbond = await DBond.deploy();
   
     console.log("dbond address:", dbond.address);
+
+    // deploy tbond
+    const DummyToken = await ethers.getContractFactory("DummyToken");
+    const dummy = await DummyToken.deploy();
+  
+    console.log("dummy address:", dummy.address);
+
+    const constract = await ethers.getContractAt("Dante", dante.address);
+
+    console.log(await constract.name());
 }
   
 main()
