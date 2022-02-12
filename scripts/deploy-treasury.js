@@ -12,9 +12,9 @@ async function main() {
 
     const Oracle = await ethers.getContractFactory("Oracle");
     const oracle = await Oracle.deploy(
-        pair.address,       // LP TOKEN
-        21600,              // HOW LONG IS EPOCH (6 HOURS)
-        __startTime         // START TIME
+        pair.address,               // LP TOKEN
+        21600,                      // HOW LONG IS EPOCH (6 HOURS)
+        __startTime                 // START TIME
     );
       
     console.log("oracle address:", oracle.address);
@@ -25,42 +25,36 @@ async function main() {
       
     console.log("treasury address:", treasury.address);
   
-    await treasury.initialize (
-        await oracle.token0(),                              // $DANTE
-        __tbond,                                            // $DBOND
-        "0x0000000000000000000000000000000000000000",       // $TSHARE
-        oracle.address,                                     // ORACLE
-        "0x0000000000000000000000000000000000000000",       // MASONRY
-        __startTime,                                        // START TIME
-    );
+    // Masonry
+    const Paradise = await ethers.getContractFactory("Paradise");
+    const paradise = await Paradise.deploy();
+       
+    console.log("paradise address:", paradise.address);
 
     // deploy tshare
     const Grail = await ethers.getContractFactory("Grail");
     const grail = await Grail.deploy(
-        __startTime,  // start time
-        treasury.address,  // treasury
-        __devFund);  // dev fund
-    
+        __startTime,                // START TIME 
+        treasury.address,           // TREASURY
+        __devFund);                 // DEV FUND
+
     console.log("grail address:", grail.address);
 
-    // Masonry
-    const Paradise = await ethers.getContractFactory("Paradise");
-    const paradise = await Paradise.deploy();
-        
-    console.log("paradise address:", paradise.address);
+    const dante = await oracle.token0();
+
+    await treasury.initialize (
+        dante,                      // $DANTE
+        __tbond,                    // $DBOND
+        grail.address,              // $TSHARE
+        oracle.address,             // ORACLE
+        paradise.address,           // MASONRY
+        __startTime,                // START TIME
+    );
 
     await paradise.initialize (
-        await oracle.token0(),
-        grail.address,
-        treasury.address
-    );
-
-    await treasury.setMasonry (
-        paradise.address
-    );
-
-    await treasury.setTShare (
-        grail.address
+        dante,                      // $DANTE
+        grail.address,              // $TSHARE
+        treasury.address            // TREASURY
     );
 
     console.log("done");
