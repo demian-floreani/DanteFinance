@@ -19,7 +19,13 @@ module.exports = {
   solidity: {
     compilers: [
       {
-        version: "0.8.0"
+        version: "0.8.0",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 1000,
+          },
+        }
       }
     ]
   },
@@ -30,12 +36,15 @@ module.exports = {
     localhost: {
       allowUnlimitedContractSize: true
     },
-    /*testnet: {
+    testnet: {
       url: secret.url,
-      accounts: [secret.key]
-    },*/
+      accounts: [secret.key],
+      gas: 10000000,
+      blockGasLimit: 10000000,
+      allowUnlimitedContractSize: true
+    },
   },
-  /*etherscan: {
+  etherscan: {
     apiKey: "JSMN6FNUZR4X6VWI1GHZBXY1EA5BDRPV1R"
-  }*/
+  }
 };

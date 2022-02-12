@@ -10,7 +10,7 @@ contract DummyToken is ERC20Burnable, Operator {
 
     constructor() ERC20("DummyToken", "DUMMY") 
     {
-        _mint(0xECBF94F8D701c7c26193e2CFDcfe28D56741Db98, 10 * 10 ** 18);
+        _mint(msg.sender, 10000 ether);
     }
 
     function mint(address recipient_, uint256 amount_) public onlyOperator returns (bool) {
