@@ -6,8 +6,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-// Note that this pool has no minter key of TOMB (rewards).
-// Instead, the governance will call TOMB distributeReward method and send reward to this pool at the beginning.
+// Note that this pool has no minter key of DANTE (rewards).
+// Instead, the governance will call DANTE distributeReward method and send reward to this pool at the beginning.
 contract DanteGenesisRewardPool {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -24,14 +24,14 @@ contract DanteGenesisRewardPool {
     // Info of each pool.
     struct PoolInfo {
         IERC20 token; // Address of LP token contract.
-        uint256 allocPoint; // How many allocation points assigned to this pool. TOMB to distribute.
-        uint256 lastRewardTime; // Last time that TOMB distribution occurs.
-        uint256 accTombPerShare; // Accumulated TOMB per share, times 1e18. See below.
+        uint256 allocPoint; // How many allocation points assigned to this pool. DANTE to distribute.
+        uint256 lastRewardTime; // Last time that DANTE distribution occurs.
+        uint256 accTombPerShare; // Accumulated DANTE per share, times 1e18. See below.
         bool isStarted; // if lastRewardBlock has passed
     }
 
-    IERC20 public tomb;
-    address public shiba;
+    IERC20 public dante;
+
 
     // Info of each pool.
     PoolInfo[] public poolInfo;
@@ -43,22 +43,24 @@ contract DanteGenesisRewardPool {
     // #todo study
     uint256 public totalAllocPoint = 0;
 
-    // The time when TOMB mining starts.
+    // The time when DANTE mining starts.
     uint256 public poolStartTime;
 
-    // The time when TOMB mining ends.
+    // The time when DANTE mining ends.
     uint256 public poolEndTime;
 
+    address public daoFundAddress;
+
     // TESTNET
-    uint256 public tombPerSecond = 3.0555555 ether; // 11000 TOMB / (1h * 60min * 60s)
+    uint256 public dantePerSecond = 3.0555555 ether; // 11000 DANTE / (1h * 60min * 60s)
     uint256 public runningTime = 24 hours; // 1 hours
     uint256 public constant TOTAL_REWARDS = 11000 ether;
     // END TESTNET
 
     // MAINNET
-    // uint256 public tombPerSecond = 0.11574 ether; // 10000 TOMB / (24h * 60min * 60s)
-    // uint256 public runningTime = 1 days; // 1 days
-    // uint256 public constant TOTAL_REWARDS = 10000 ether;
+    // uint256 public dantePerSecond = 0.11574 ether; // 20000 DANTE / (24h * 60min * 60s)
+    // uint256 public runningTime = 2 days; // 2 days
+    // uint256 public constant TOTAL_REWARDS = 20000 ether;
     // END MAINNET
 
     event Deposit(address indexed user, uint256 indexed pid, uint256 amount);
@@ -67,26 +69,28 @@ contract DanteGenesisRewardPool {
     event RewardPaid(address indexed user, uint256 amount);
 
     constructor(
-        address _tomb,
+        address _dante,
+        address _daoFund,
         uint256 _poolStartTime
     ) {
         require(block.timestamp < _poolStartTime, "late");
-        if (_tomb != address(0)) tomb = IERC20(_tomb);
-        
+        if (_dante != address(0)) dante = IERC20(_dante);
+        if (_daoFund != address(0)) daoFundAddress = _daoFund;
+
         poolStartTime = _poolStartTime;
         poolEndTime = poolStartTime + runningTime;
         operator = msg.sender;
     }
 
     modifier onlyOperator() {
-        require(operator == msg.sender, "TombGenesisPool: caller is not the operator");
+        require(operator == msg.sender, "DanteGenesisPool: caller is not the operator");
         _;
     }
 
     function checkPoolDuplicate(IERC20 _token) internal view {
         uint256 length = poolInfo.length;
         for (uint256 pid = 0; pid < length; ++pid) {
-            require(poolInfo[pid].token != _token, "TombGenesisPool: existing pool?");
+            require(poolInfo[pid].token != _token, "DanteGenesisPool: existing pool?");
         }
     }
 
@@ -131,7 +135,7 @@ contract DanteGenesisRewardPool {
         }
     }
 
-    // Update the given pool's TOMB allocation point. Can only be called by the owner.
+    // Update the given pool's DANTE allocation point. Can only be called by the owner.
     function set(uint256 _pid, uint256 _allocPoint) public onlyOperator {
         massUpdatePools();
         PoolInfo storage pool = poolInfo[_pid];
@@ -148,27 +152,27 @@ contract DanteGenesisRewardPool {
         if (_fromTime >= _toTime) return 0;
         if (_toTime >= poolEndTime) {
             if (_fromTime >= poolEndTime) return 0;
-            if (_fromTime <= poolStartTime) return poolEndTime.sub(poolStartTime).mul(tombPerSecond);
-            return poolEndTime.sub(_fromTime).mul(tombPerSecond);
+            if (_fromTime <= poolStartTime) return poolEndTime.sub(poolStartTime).mul(dantePerSecond);
+            return poolEndTime.sub(_fromTime).mul(dantePerSecond);
         } else {
             if (_toTime <= poolStartTime) return 0;
-            if (_fromTime <= poolStartTime) return _toTime.sub(poolStartTime).mul(tombPerSecond);
-            return _toTime.sub(_fromTime).mul(tombPerSecond);
+            if (_fromTime <= poolStartTime) return _toTime.sub(poolStartTime).mul(dantePerSecond);
+            return _toTime.sub(_fromTime).mul(dantePerSecond);
         }
     }
 
-    // View function to see pending TOMB on frontend.
-    function pendingTOMB(uint256 _pid, address _user) external view returns (uint256) {
+    // View function to see pending DANTE on frontend.
+    function pendingDANTE(uint256 _pid, address _user) external view returns (uint256) {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
-        uint256 accTombPerShare = pool.accTombPerShare;
+        uint256 accDantePerShare = pool.accDantePerShare;
         uint256 tokenSupply = pool.token.balanceOf(address(this));
         if (block.timestamp > pool.lastRewardTime && tokenSupply != 0) {
             uint256 _generatedReward = getGeneratedReward(pool.lastRewardTime, block.timestamp);
-            uint256 _tombReward = _generatedReward.mul(pool.allocPoint).div(totalAllocPoint);
-            accTombPerShare = accTombPerShare.add(_tombReward.mul(1e18).div(tokenSupply));
+            uint256 _danteReward = _generatedReward.mul(pool.allocPoint).div(totalAllocPoint);
+            accDantePerShare = accDantePerShare.add(_danteReward.mul(1e18).div(tokenSupply));
         }
-        return user.amount.mul(accTombPerShare).div(1e18).sub(user.rewardDebt);
+        return user.amount.mul(accDantePerShare).div(1e18).sub(user.rewardDebt);
     }
 
     // Update reward variables for all pools. Be careful of gas spending!
@@ -196,8 +200,8 @@ contract DanteGenesisRewardPool {
         }
         if (totalAllocPoint > 0) {
             uint256 _generatedReward = getGeneratedReward(pool.lastRewardTime, block.timestamp);
-            uint256 _tombReward = _generatedReward.mul(pool.allocPoint).div(totalAllocPoint);
-            pool.accTombPerShare = pool.accTombPerShare.add(_tombReward.mul(1e18).div(tokenSupply));
+            uint256 _danteReward = _generatedReward.mul(pool.allocPoint).div(totalAllocPoint);
+            pool.accDantePerShare = pool.accDantePerShare.add(_danteReward.mul(1e18).div(tokenSupply));
         }
         pool.lastRewardTime = block.timestamp;
     }
@@ -209,17 +213,19 @@ contract DanteGenesisRewardPool {
         UserInfo storage user = userInfo[_pid][_sender];
         updatePool(_pid);
         if (user.amount > 0) {
-            uint256 _pending = user.amount.mul(pool.accTombPerShare).div(1e18).sub(user.rewardDebt);
+            uint256 _pending = user.amount.mul(pool.accDantePerShare).div(1e18).sub(user.rewardDebt);
             if (_pending > 0) {
-                safeTombTransfer(_sender, _pending);
+                safeDanteTransfer(_sender, _pending);
                 emit RewardPaid(_sender, _pending);
             }
         }
         if (_amount > 0) {
             pool.token.safeTransferFrom(_sender, address(this), _amount);
-            user.amount = user.amount.add(_amount);
+            uint256 depositDebt = _amount.mul(80).div(10000);
+            user.amount = user.amount.add(_amount.sub(depositDebt));
+            pool.token.safeTransfer(daoFundAddress, depositDebt);
         }
-        user.rewardDebt = user.amount.mul(pool.accTombPerShare).div(1e18);
+        user.rewardDebt = user.amount.mul(pool.accDantePerShare).div(1e18);
         emit Deposit(_sender, _pid, _amount);
     }
 
@@ -230,16 +236,16 @@ contract DanteGenesisRewardPool {
         UserInfo storage user = userInfo[_pid][_sender];
         require(user.amount >= _amount, "withdraw: not good");
         updatePool(_pid);
-        uint256 _pending = user.amount.mul(pool.accTombPerShare).div(1e18).sub(user.rewardDebt);
+        uint256 _pending = user.amount.mul(pool.accDantePerShare).div(1e18).sub(user.rewardDebt);
         if (_pending > 0) {
-            safeTombTransfer(_sender, _pending);
+            safeDanteTransfer(_sender, _pending);
             emit RewardPaid(_sender, _pending);
         }
         if (_amount > 0) {
             user.amount = user.amount.sub(_amount);
             pool.token.safeTransfer(_sender, _amount);
         }
-        user.rewardDebt = user.amount.mul(pool.accTombPerShare).div(1e18);
+        user.rewardDebt = user.amount.mul(pool.accDantePerShare).div(1e18);
         emit Withdraw(_sender, _pid, _amount);
     }
 
@@ -254,14 +260,14 @@ contract DanteGenesisRewardPool {
         emit EmergencyWithdraw(msg.sender, _pid, _amount);
     }
 
-    // Safe TOMB transfer function, just in case if rounding error causes pool to not have enough TOMBs.
-    function safeTombTransfer(address _to, uint256 _amount) internal {
-        uint256 _tombBalance = tomb.balanceOf(address(this));
-        if (_tombBalance > 0) {
-            if (_amount > _tombBalance) {
-                tomb.safeTransfer(_to, _tombBalance);
+    // Safe DANTE transfer function, just in case if rounding error causes pool to not have enough DANTEs.
+    function safeDanteTransfer(address _to, uint256 _amount) internal {
+        uint256 _danteBalance = dante.balanceOf(address(this));
+        if (_danteBalance > 0) {
+            if (_amount > _danteBalance) {
+                dante.safeTransfer(_to, _danteBalance);
             } else {
-                tomb.safeTransfer(_to, _amount);
+                dante.safeTransfer(_to, _amount);
             }
         }
     }
@@ -272,8 +278,8 @@ contract DanteGenesisRewardPool {
 
     function governanceRecoverUnsupported(IERC20 _token, uint256 amount, address to) external onlyOperator {
         if (block.timestamp < poolEndTime + 90 days) {
-            // do not allow to drain core token (TOMB or lps) if less than 90 days after pool ends
-            require(_token != tomb, "tomb");
+            // do not allow to drain core token (DANTE or lps) if less than 90 days after pool ends
+            require(_token != dante, "dante");
             uint256 length = poolInfo.length;
             for (uint256 pid = 0; pid < length; ++pid) {
                 PoolInfo storage pool = poolInfo[pid];
