@@ -26,7 +26,7 @@ contract DanteGenesisRewardPool {
         IERC20 token; // Address of LP token contract.
         uint256 allocPoint; // How many allocation points assigned to this pool. DANTE to distribute.
         uint256 lastRewardTime; // Last time that DANTE distribution occurs.
-        uint256 accTombPerShare; // Accumulated DANTE per share, times 1e18. See below.
+        uint256 accDantePerShare; // Accumulated DANTE per share, times 1e18. See below.
         bool isStarted; // if lastRewardBlock has passed
     }
 
@@ -127,7 +127,7 @@ contract DanteGenesisRewardPool {
             token : _token,
             allocPoint : _allocPoint,
             lastRewardTime : _lastRewardTime,
-            accTombPerShare : 0,
+            accDantePerShare : 0,
             isStarted : _isStarted
             }));
         if (_isStarted) {

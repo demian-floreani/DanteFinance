@@ -30,12 +30,12 @@ module.exports = {
     localhost: {
       allowUnlimitedContractSize: true
     },
-    testnet: {
+    /*testnet: {
       url: secret.url,
       accounts: [secret.key]
-    },
+    },*/
   },
-  etherscan: {
+  /*etherscan: {
     apiKey: "JSMN6FNUZR4X6VWI1GHZBXY1EA5BDRPV1R"
-  }
+  }*/
 };
