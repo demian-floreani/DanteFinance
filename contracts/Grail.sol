@@ -7,6 +7,17 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
 import "./owner/Operator.sol";
 
+/**
+    (                                                                        
+    )\ )                   )        (                                        
+    (()/(      )         ( /(   (    )\ )  (             )                (   
+    /(_))  ( /(   (     )\()) ))\  (()/(  )\   (     ( /(   (      (    ))\  
+    (_))_   )(_))  )\ ) (_))/ /((_)  /(_))((_)  )\ )  )(_))  )\ )   )\  /((_) 
+    |   \ ((_)_  _(_/( | |_ (_))   (_) _| (_) _(_/( ((_)_  _(_/(  ((_)(_))   
+    | |) |/ _` || ' \))|  _|/ -_)   |  _| | || ' \))/ _` || ' \))/ _| / -_)  
+    |___/ \__,_||_||_|  \__|\___|   |_|   |_||_||_| \__,_||_||_| \__| \___|  
+
+ */
 contract Grail is ERC20Burnable, Operator {
     using SafeMath for uint256;
 
@@ -31,7 +42,8 @@ contract Grail is ERC20Burnable, Operator {
     bool public rewardPoolDistributed = false;
 
     constructor(uint256 _startTime, address _communityFund, address _devFund) ERC20("GRAIL", "GRAIL") {
-        _mint(msg.sender, 2 ether); // mint 1 TOMB Share for initial pools deployment
+        _mint(msg.sender, 1 ether); // mint 1 TOMB Share for initial pools deployment
+        _mint(msg.sender, 10 ether); // FOR TESTING ONLY -- DELETE AFTER
 
         startTime = _startTime;
         endTime = startTime + VESTING_DURATION;

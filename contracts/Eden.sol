@@ -42,16 +42,18 @@ contract ShareWrapper {
     }
 }
 
-/*
-  ______                __       _______
- /_  __/___  ____ ___  / /_     / ____(_)___  ____ _____  ________
-  / / / __ \/ __ `__ \/ __ \   / /_  / / __ \/ __ `/ __ \/ ___/ _ \
- / / / /_/ / / / / / / /_/ /  / __/ / / / / / /_/ / / / / /__/  __/
-/_/  \____/_/ /_/ /_/_.___/  /_/   /_/_/ /_/\__,_/_/ /_/\___/\___/
+/**
+    (                                                                        
+    )\ )                   )        (                                        
+    (()/(      )         ( /(   (    )\ )  (             )                (   
+    /(_))  ( /(   (     )\()) ))\  (()/(  )\   (     ( /(   (      (    ))\  
+    (_))_   )(_))  )\ ) (_))/ /((_)  /(_))((_)  )\ )  )(_))  )\ )   )\  /((_) 
+    |   \ ((_)_  _(_/( | |_ (_))   (_) _| (_) _(_/( ((_)_  _(_/(  ((_)(_))   
+    | |) |/ _` || ' \))|  _|/ -_)   |  _| | || ' \))/ _` || ' \))/ _| / -_)  
+    |___/ \__,_||_||_|  \__|\___|   |_|   |_||_||_| \__,_||_||_| \__| \___|  
 
-    http://tomb.finance
-*/
-contract Paradise is ShareWrapper, ContractGuard {
+ */
+contract Eden is ShareWrapper, ContractGuard {
     using SafeERC20 for IERC20;
     using Address for address;
     using SafeMath for uint256;
@@ -78,7 +80,7 @@ contract Paradise is ShareWrapper, ContractGuard {
     // flags
     bool public initialized = false;
 
-    IERC20 public tomb;
+    IERC20 public dante;
     ITreasury public treasury;
 
     mapping(address => Masonseat) public masons;
@@ -125,11 +127,11 @@ contract Paradise is ShareWrapper, ContractGuard {
     /* ========== GOVERNANCE ========== */
 
     function initialize(
-        IERC20 _tomb,
+        IERC20 _dante,
         IERC20 _share,
         ITreasury _treasury
     ) public notInitialized {
-        tomb = _tomb;
+        dante = _dante;
         share = _share;
         treasury = _treasury;
 
@@ -234,7 +236,7 @@ contract Paradise is ShareWrapper, ContractGuard {
             require(masons[msg.sender].epochTimerStart.add(rewardLockupEpochs) <= treasury.epoch(), "Masonry: still in reward lockup");
             masons[msg.sender].epochTimerStart = treasury.epoch(); // reset timer
             masons[msg.sender].rewardEarned = 0;
-            tomb.safeTransfer(msg.sender, reward);
+            dante.safeTransfer(msg.sender, reward);
             emit RewardPaid(msg.sender, reward);
         }
     }
@@ -254,13 +256,13 @@ contract Paradise is ShareWrapper, ContractGuard {
         });
         masonryHistory.push(newSnapshot);
 
-        tomb.safeTransferFrom(msg.sender, address(this), amount);
+        dante.safeTransferFrom(msg.sender, address(this), amount);
         emit RewardAdded(msg.sender, amount);
     }
 
     function governanceRecoverUnsupported(IERC20 _token, uint256 _amount, address _to) external onlyOperator {
         // do not allow to drain core tokens
-        require(address(_token) != address(tomb), "tomb");
+        require(address(_token) != address(dante), "dante");
         require(address(_token) != address(share), "share");
         _token.safeTransfer(_to, _amount);
     }

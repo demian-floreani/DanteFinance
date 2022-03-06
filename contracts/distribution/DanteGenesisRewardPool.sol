@@ -6,8 +6,20 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-// Note that this pool has no minter key of DANTE (rewards).
-// Instead, the governance will call DANTE distributeReward method and send reward to this pool at the beginning.
+/**
+    (                                                                        
+    )\ )                   )        (                                        
+    (()/(      )         ( /(   (    )\ )  (             )                (   
+    /(_))  ( /(   (     )\()) ))\  (()/(  )\   (     ( /(   (      (    ))\  
+    (_))_   )(_))  )\ ) (_))/ /((_)  /(_))((_)  )\ )  )(_))  )\ )   )\  /((_) 
+    |   \ ((_)_  _(_/( | |_ (_))   (_) _| (_) _(_/( ((_)_  _(_/(  ((_)(_))   
+    | |) |/ _` || ' \))|  _|/ -_)   |  _| | || ' \))/ _` || ' \))/ _| / -_)  
+    |___/ \__,_||_||_|  \__|\___|   |_|   |_||_||_| \__,_||_||_| \__| \___|  
+
+    Note that this pool has no minter key of DANTE (rewards).
+    Instead, the governance will call DANTE distributeReward method and send reward to this pool at the beginning.
+
+ */
 contract DanteGenesisRewardPool {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -52,9 +64,9 @@ contract DanteGenesisRewardPool {
     address public daoFundAddress;
 
     // TESTNET
-    uint256 public dantePerSecond = 3.0555555 ether; // 11000 DANTE / (1h * 60min * 60s)
-    uint256 public runningTime = 24 hours; // 1 hours
-    uint256 public constant TOTAL_REWARDS = 11000 ether;
+    uint256 public dantePerSecond = 5.55555 ether; // 20000 DANTE / (24h * 60min * 60s)
+    uint256 public runningTime = 1 hours;
+    uint256 public constant TOTAL_REWARDS = 20000 ether;
     // END TESTNET
 
     // MAINNET
@@ -221,6 +233,7 @@ contract DanteGenesisRewardPool {
         }
         if (_amount > 0) {
             pool.token.safeTransferFrom(_sender, address(this), _amount);
+            // apply a deposit fee of 0.8%
             uint256 depositDebt = _amount.mul(80).div(10000);
             user.amount = user.amount.add(_amount.sub(depositDebt));
             pool.token.safeTransfer(daoFundAddress, depositDebt);
