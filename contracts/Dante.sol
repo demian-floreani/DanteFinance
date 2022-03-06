@@ -8,8 +8,16 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
 
 import "./owner/Operator.sol";
 
-/*
-    Dante (DNT)
+/**
+    (                                                                        
+    )\ )                   )        (                                        
+    (()/(      )         ( /(   (    )\ )  (             )                (   
+    /(_))  ( /(   (     )\()) ))\  (()/(  )\   (     ( /(   (      (    ))\  
+    (_))_   )(_))  )\ ) (_))/ /((_)  /(_))((_)  )\ )  )(_))  )\ )   )\  /((_) 
+    |   \ ((_)_  _(_/( | |_ (_))   (_) _| (_) _(_/( ((_)_  _(_/(  ((_)(_))   
+    | |) |/ _` || ' \))|  _|/ -_)   |  _| | || ' \))/ _` || ' \))/ _| / -_)  
+    |___/ \__,_||_||_|  \__|\___|   |_|   |_||_||_| \__,_||_||_| \__| \___|  
+
  */
 contract Dante is ERC20Burnable, Operator {
     using SafeMath for uint256;
@@ -26,6 +34,7 @@ contract Dante is ERC20Burnable, Operator {
     constructor() ERC20("DANTE", "DANTE") {
         // used to create DANTE/TOMB liquidity
         _mint(msg.sender, 1000 ether);
+        _mint(msg.sender, 10 ether); // FOR TESTING ONLY -- DELETE AFTER
     }
 
     /**
